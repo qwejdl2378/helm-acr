@@ -27,14 +27,25 @@ build_linux:
 link_linux:
 	@cp bin/linux/amd64/helm-cm-push ./bin/helm-cm-push
 
-build_mac: export GOARCH=amd64
+build_linux_arm64: export GOARCH=arm64
+build_linux_arm64: export CGO_ENABLED=0
+build_linux_arm64: export GO111MODULE=on
+build_linux_arm64: export GOPROXY=https://gocenter.io
+build_linux_arm64:
+	@GOOS=linux go build -v --ldflags="-w -X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
+		-o bin/linux/arm64/helm-cm-push cmd/helm-cm-push/main.go  # linux
+
+link_linux_arm64:
+	@cp bin/linux/arm64/helm-cm-push ./bin/helm-cm-push
+
+build_mac: export GOARCH=arm64
 build_mac: export CGO_ENABLED=0
 build_mac: export GO111MODULE=on
 build_mac: export GOPROXY=https://gocenter.io
 build_mac:
-	@GOOS=darwin go build -v --ldflags="-w -X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
-		-o bin/darwin/amd64/helm-cm-push cmd/helm-cm-push/main.go # mac osx
-	@cp bin/darwin/amd64/helm-cm-push ./bin/helm-cm-push # For use w make install
+	@GOOS=darwin go build  \
+		-o bin/darwin/arm64/helm-cm-push cmd/helm-cm-push/main.go # mac osx
+	@cp bin/darwin/arm64/helm-cm-push ./bin/helm-cm-push # For use w make install
 
 link_mac:
 	@cp bin/darwin/amd64/helm-cm-push ./bin/helm-cm-push
